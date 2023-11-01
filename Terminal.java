@@ -2,11 +2,14 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.LinkOption;
 import java.nio.file.Path;
+import java.util.Arrays;
+import java.util.Collections;
+
 public class Terminal {
     Parser parser;
     Path currentPath, homeDir;
     public Terminal() {
-        homeDir = new File(System.getProperty("user.home")).toPath();
+        homeDir = new File(System.getProperty("user.dir")).toPath();
         currentPath = homeDir;
         parser = new Parser();
     }
@@ -36,12 +39,30 @@ public class Terminal {
         }
     }
 
+    public void ls() {
+        String[] arr = currentPath.toFile().list();
+        assert arr != null;
+        Arrays.sort(arr);
+        for (String a : arr) {
+            System.out.println(a);
+        }
+    }
+
+    public void ls_r() {
+        String[] arr = currentPath.toFile().list();
+        assert arr != null;
+        Arrays.sort(arr, Collections.reverseOrder());
+        for (String a : arr) {
+            System.out.println(a);
+        }
+    }
+
     public void chooseCommandAction() {}
     public static void main(String[] args) {
         Terminal terminal = new Terminal();
         System.out.println(terminal.pwd());
         terminal.cd("../test");
-        terminal.cd("..");
+        terminal.ls_r();
 
     }
 }
