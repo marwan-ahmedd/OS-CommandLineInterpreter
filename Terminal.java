@@ -24,7 +24,6 @@ public class Terminal {
     }
     public void cd() {
         currentPath = homeDir;
-        System.out.println(currentPath);;
     }
     public void cd(String path) {
         if (path.equals("..")) {
@@ -33,7 +32,7 @@ public class Terminal {
             try {
                 currentPath = currentPath.resolve(path).toRealPath(LinkOption.NOFOLLOW_LINKS);
             } catch (IOException e) {
-                System.out.println("Invalid Path");
+                System.out.println("Error: Invalid path");
             }
         }
     }
@@ -59,14 +58,18 @@ public class Terminal {
     }
 
     public void mkdir(String[] args) {
-        for (String dir : args) {
-            File f = currentPath.resolve(dir).toFile();
-            if (f.exists()) {
-                System.out.println(currentPath + ": Directory Already Exists!");
+        try {
+            for (String dir : args) {
+                File f = currentPath.resolve(dir).toFile();
+                if (f.exists() && f.isDirectory()) {
+                    throw new Error(currentPath + ": Directory already exists");
+                }
+                else if (!f.mkdir()) {
+                    throw new Error("Error: invalid parameters are entered!");
+                }
             }
-            else if (!f.mkdir()) {
-                System.out.println("Error: invalid parameters are entered!");
-            }
+        } catch (Error e) {
+            System.out.println(e.getMessage());
         }
     }
 
@@ -79,12 +82,18 @@ public class Terminal {
                 }
             }
         } else {
-            File cur = currentPath.resolve(arg).toFile();
-            if (!cur.exists()) {
-                System.out.println(arg + " doesn't exist!");
-            }
-            else if (!cur.delete()) {
-                System.out.println(arg + " is not empty!");
+            try {
+                File cur = currentPath.resolve(arg).toFile();
+                if (!cur.exists()) {
+                    throw new Error(arg + ": No Such directory!");
+                }
+                else if (cur.isDirectory() && Objects.requireNonNull(cur.listFiles()).length == 0) {
+                    cur.delete();
+                } else {
+                    throw new Error(arg + ": The system cannot find the directory specified!");
+                }
+            } catch (Error e) {
+                System.out.println(e.getMessage());
             }
         }
     }
@@ -111,7 +120,6 @@ public class Terminal {
         Terminal terminal = new Terminal();
         System.out.println(terminal.pwd());
         terminal.cd("../test");
-        terminal.touch("../another/bcc.txt");
 
     }
 }
