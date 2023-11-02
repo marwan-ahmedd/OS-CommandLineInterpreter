@@ -57,12 +57,20 @@ public class Terminal {
         }
     }
 
+    public void rm(String name) {
+        File f = currentPath.resolve(name).toFile();
+        if (f.delete()) {
+            System.out.println("Deleted Successfully");
+        } else {
+            System.out.println(currentPath + ": No such file!");
+        }
+    }
+
     public void chooseCommandAction() {}
     public static void main(String[] args) {
         Terminal terminal = new Terminal();
         System.out.println(terminal.pwd());
         terminal.cd("../test");
-        terminal.ls_r();
 
     }
 }
